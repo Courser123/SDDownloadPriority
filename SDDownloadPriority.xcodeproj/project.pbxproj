@@ -13,6 +13,9 @@
 		13FDD29320ECA3FB00110E1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13FDD29220ECA3FB00110E1E /* Assets.xcassets */; };
 		13FDD29620ECA3FB00110E1E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13FDD29420ECA3FB00110E1E /* LaunchScreen.storyboard */; };
 		13FDD29920ECA3FB00110E1E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13FDD29820ECA3FB00110E1E /* main.m */; };
+		13FDD2A020ECB09000110E1E /* remoteUrls.txt in Resources */ = {isa = PBXBuildFile; fileRef = 13FDD29F20ECB09000110E1E /* remoteUrls.txt */; };
+		13FDD2A320ECB0B900110E1E /* ImageViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 13FDD2A220ECB0B900110E1E /* ImageViewHelper.m */; };
+		13FDD2A620ECB15300110E1E /* SDDownloadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13FDD2A520ECB15300110E1E /* SDDownloadViewController.m */; };
 		AE7175BC9D934E7006CBE93D /* libPods-SDDownloadPriority.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 119766D447D05D07CA9FA071 /* libPods-SDDownloadPriority.a */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +31,11 @@
 		13FDD29520ECA3FB00110E1E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13FDD29720ECA3FB00110E1E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13FDD29820ECA3FB00110E1E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		13FDD29F20ECB09000110E1E /* remoteUrls.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = remoteUrls.txt; sourceTree = "<group>"; };
+		13FDD2A120ECB0B900110E1E /* ImageViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewHelper.h; sourceTree = "<group>"; };
+		13FDD2A220ECB0B900110E1E /* ImageViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageViewHelper.m; sourceTree = "<group>"; };
+		13FDD2A420ECB15300110E1E /* SDDownloadViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDDownloadViewController.h; sourceTree = "<group>"; };
+		13FDD2A520ECB15300110E1E /* SDDownloadViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDDownloadViewController.m; sourceTree = "<group>"; };
 		3BE35AB964DD4B713BDF012A /* Pods-SDDownloadPriority.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDownloadPriority.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDDownloadPriority/Pods-SDDownloadPriority.release.xcconfig"; sourceTree = "<group>"; };
 		BFB682F5C3AAB2CC1E260A0F /* Pods-SDDownloadPriority.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDownloadPriority.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDDownloadPriority/Pods-SDDownloadPriority.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,11 +77,16 @@
 				13FDD28A20ECA3FB00110E1E /* AppDelegate.m */,
 				13FDD28C20ECA3FB00110E1E /* ViewController.h */,
 				13FDD28D20ECA3FB00110E1E /* ViewController.m */,
+				13FDD2A420ECB15300110E1E /* SDDownloadViewController.h */,
+				13FDD2A520ECB15300110E1E /* SDDownloadViewController.m */,
+				13FDD2A120ECB0B900110E1E /* ImageViewHelper.h */,
+				13FDD2A220ECB0B900110E1E /* ImageViewHelper.m */,
 				13FDD28F20ECA3FB00110E1E /* Main.storyboard */,
 				13FDD29220ECA3FB00110E1E /* Assets.xcassets */,
 				13FDD29420ECA3FB00110E1E /* LaunchScreen.storyboard */,
 				13FDD29720ECA3FB00110E1E /* Info.plist */,
 				13FDD29820ECA3FB00110E1E /* main.m */,
+				13FDD29F20ECB09000110E1E /* remoteUrls.txt */,
 			);
 			path = SDDownloadPriority;
 			sourceTree = "<group>";
@@ -157,6 +170,7 @@
 			files = (
 				13FDD29620ECA3FB00110E1E /* LaunchScreen.storyboard in Resources */,
 				13FDD29320ECA3FB00110E1E /* Assets.xcassets in Resources */,
+				13FDD2A020ECB09000110E1E /* remoteUrls.txt in Resources */,
 				13FDD29120ECA3FB00110E1E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -229,7 +243,9 @@
 			files = (
 				13FDD28E20ECA3FB00110E1E /* ViewController.m in Sources */,
 				13FDD29920ECA3FB00110E1E /* main.m in Sources */,
+				13FDD2A320ECB0B900110E1E /* ImageViewHelper.m in Sources */,
 				13FDD28B20ECA3FB00110E1E /* AppDelegate.m in Sources */,
+				13FDD2A620ECB15300110E1E /* SDDownloadViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
