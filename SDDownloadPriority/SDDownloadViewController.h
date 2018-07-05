@@ -10,4 +10,6 @@
 
 @interface SDDownloadViewController : UIViewController
 
+@property (nonatomic, assign) NSInteger mark;
+
 @end

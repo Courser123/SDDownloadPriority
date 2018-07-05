@@ -24,19 +24,33 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.view.backgroundColor = [UIColor grayColor];
     self.URLs = [ImageViewHelper remoteUrlList];
-//    [self showSDImage];
+    [self showSDButton];
 }
 
-- (void)showSDImage {
-    UIImageView *sdImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-    [sdImageView sd_setImageWithURL:[NSURL URLWithString:self.URLs.firstObject] placeholderImage:nil options:SDWebImageCacheMemoryOnly];
-    [self.view addSubview:sdImageView];
+- (void)showSDButton {
+    UIButton *topButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height * 0.5)];
+    topButton.tag = 0;
+    topButton.backgroundColor = [UIColor greenColor];
+    [topButton addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:topButton];
+    
+    UIButton *bottomButton = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height * 0.5, self.view.bounds.size.width, self.view.bounds.size.height * 0.5)];
+    bottomButton.tag = 1;
+    bottomButton.backgroundColor = [UIColor redColor];
+    [bottomButton addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:bottomButton];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+- (void)btnClick:(UIButton *)btn {
     SDDownloadViewController *vc = [[SDDownloadViewController alloc] init];
+    vc.mark = btn.tag;
     [self.navigationController pushViewController:vc animated:YES];
 }
+
+//- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+//    SDDownloadViewController *vc = [[SDDownloadViewController alloc] init];
+//    [self.navigationController pushViewController:vc animated:YES];
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

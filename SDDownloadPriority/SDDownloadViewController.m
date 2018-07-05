@@ -9,6 +9,7 @@
 #import "SDDownloadViewController.h"
 #import <UIImageView+WebCache.h>
 #import "ImageViewHelper.h"
+#import <SDImageCache.h>
 
 @interface SDDownloadViewController ()
 
@@ -22,7 +23,27 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.URLs = [ImageViewHelper remoteUrlList];
-    [self showSDImage];
+    [self downloadImages];
+}
+
+- (void)downloadImages {
+    if (self.mark > 0) {
+        for (int i = 30; i < 40; i++) {
+            UIImageView *imageView = [[UIImageView alloc] init];
+            [self.view addSubview:imageView];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                NSLog(@"downloadfinished : %@",@(i));
+            }];
+        }
+    }else {
+        for (int i = 0; i < 30; i++) {
+            UIImageView *imageView = [[UIImageView alloc] init];
+            [self.view addSubview:imageView];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                NSLog(@"downloadfinished : %@",@(i));
+            }];
+        }
+    }
 }
 
 - (void)showSDImage {
@@ -34,6 +55,10 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)dealloc {
+    [[SDImageCache sharedImageCache] clearMemory];
 }
 
 @end
