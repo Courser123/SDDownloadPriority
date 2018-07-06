@@ -14,6 +14,8 @@
 @interface SDDownloadViewController ()
 
 @property (nonatomic, strong) NSArray<NSString *> *URLs;
+@property (nonatomic, assign) double start;
+@property (nonatomic, assign) BOOL first;
 
 @end
 
@@ -23,25 +25,44 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.URLs = [ImageViewHelper remoteUrlList];
+    self.first = YES;
     [self downloadImages];
 }
 
 - (void)downloadImages {
+    self.start = CACurrentMediaTime();
     if (self.mark > 0) {
-        for (int i = 30; i < 40; i++) {
-            UIImageView *imageView = [[UIImageView alloc] init];
+        for (int i = 100; i < 110; i++) {
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
             [self.view addSubview:imageView];
             [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                NSLog(@"downloadfinished : %@",@(i));
+                if (self.first) {
+                    self.title = [NSString stringWithFormat:@"%lf",CACurrentMediaTime() - self.start];
+                    self.first = NO;
+                }
+                if (cacheType == SDImageCacheTypeNone) {
+                    NSLog(@"downloadfinished : %@",@(i));
+                }else if (cacheType == SDImageCacheTypeMemory) {
+                    NSLog(@"hit memory cache");
+                }else {
+                    NSLog(@"hit disk cache");
+                }
             }];
         }
     }else {
-        for (int i = 0; i < 30; i++) {
-            UIImageView *imageView = [[UIImageView alloc] init];
+        for (int i = 0; i < 100; i++) {
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
             [self.view addSubview:imageView];
             [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                NSLog(@"downloadfinished : %@",@(i));
+                if (cacheType == SDImageCacheTypeNone) {
+                    NSLog(@"downloadfinished : %@",@(i));
+                }else if (cacheType == SDImageCacheTypeMemory) {
+                    NSLog(@"hit memory cache");
+                }else {
+                    NSLog(@"hit disk cache");
+                }
             }];
+//            NSLog(@"retainCount : %ld",CFGetRetainCount((__bridge CFTypeRef) imageView));
         }
     }
 }
@@ -58,7 +79,10 @@
 }
 
 - (void)dealloc {
-    [[SDImageCache sharedImageCache] clearMemory];
+    NSLog(@"SDDownloadViewController dealloc");
+    if (self.mark <= 0) {
+        [[SDImageCache sharedImageCache] clearMemory];
+    }
 }
 
 @end
