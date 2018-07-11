@@ -52,4 +52,20 @@ static char loadOperationKey;
     [operationDictionary removeObjectForKey:key];
 }
 
+- (void)sd_changeOperationPriorityForKey:(NSString *)key {
+    NSMutableDictionary *operationDictionary = [self operationDictionary];
+    id operations = [operationDictionary objectForKey:key];
+    if (operations) {
+        if ([operations isKindOfClass:[NSArray class]]) {
+            for (id <SDWebImageOperation> operation in operations) {
+                if (operation) {
+                    [operation changePriority:NSOperationQueuePriorityVeryLow];
+                }
+            }
+        } else if ([operations conformsToProtocol:@protocol(SDWebImageOperation)]){
+            [(id<SDWebImageOperation>) operations changePriority:NSOperationQueuePriorityVeryLow];
+        }
+    }
+}
+
 @end

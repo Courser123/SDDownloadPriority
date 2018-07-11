@@ -30,6 +30,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
 @interface SDWebImageDownloaderOperation () <NSURLConnectionDataDelegate>
 
 @property (strong, nonatomic) NSMutableArray<NSMutableDictionary *> *callbackBlocks;
+@property (strong, nonatomic) NSMutableArray<NSMutableDictionary *> *callbackBlocksCopy;
 @property (copy, atomic) SDWebImageDownloaderProgressBlock progressBlock;
 @property (copy, atomic) SDWebImageDownloaderCompletedBlock completedBlock;
 @property (copy, atomic) SDWebImageNoParamsBlock cancelBlock;
@@ -70,6 +71,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
         _expectedSize = 0;
         responseFromCached = YES; // Initially wrong until `connection:willCacheResponse:` is called or not called
         _callbackBlocks = [NSMutableArray array];
+        _callbackBlocksCopy = [NSMutableArray array];
         _callbacksLock = dispatch_semaphore_create(1);
     }
     return self;
@@ -103,6 +105,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
     if (completedBlock) callbacks[kCompletedCallbackKey] = [completedBlock copy];
     LOCK(self.callbacksLock);
     [self.callbackBlocks addObject:callbacks];
+    [self.callbackBlocksCopy addObject:callbacks];
     UNLOCK(self.callbacksLock);
     return callbacks;
 }
@@ -120,6 +123,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
     LOCK(self.callbacksLock);
     if (token) {
         [self.callbackBlocks removeObjectIdenticalTo:token];
+        [self.callbackBlocksCopy removeObjectIdenticalTo:token];
     }
     if (self.callbackBlocks.count == 0) {
         shouldCancel = YES;
@@ -129,6 +133,22 @@ static NSString *const kCompletedCallbackKey = @"completed";
         [self cancel];
     }
     return shouldCancel;
+}
+
+- (BOOL)changeOperationPriority:(NSOperationQueuePriority)priority token:(id)token {
+    BOOL shouldChange = NO;
+    LOCK(self.callbacksLock);
+    if (token) {
+        [self.callbackBlocksCopy removeObjectIdenticalTo:token];
+    }
+    if (self.callbackBlocksCopy.count == 0) {
+        shouldChange = YES;
+    }
+    UNLOCK(self.callbacksLock);
+    if (shouldChange) {
+        self.queuePriority = priority;
+    }
+    return shouldChange;
 }
 
 - (void)start {
@@ -249,6 +269,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
 //    if (cancelBlock) cancelBlock();
     LOCK(self.callbacksLock);
     [self.callbackBlocks removeAllObjects];
+    [self.callbackBlocksCopy removeAllObjects];
     UNLOCK(self.callbacksLock);
     
     if (self.connection) {
@@ -276,6 +297,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
 
     LOCK(self.callbacksLock);
     [self.callbackBlocks removeAllObjects];
+    [self.callbackBlocksCopy removeAllObjects];
     UNLOCK(self.callbacksLock);
     self.connection = nil;
     self.imageData = nil;
@@ -544,6 +566,7 @@ static NSString *const kCompletedCallbackKey = @"completed";
     [self callCompletionBlocksWithImage:nil imageData:nil error:error finished:YES];
     LOCK(self.callbacksLock);
     [self.callbackBlocks removeAllObjects];
+    [self.callbackBlocksCopy removeAllObjects];
     UNLOCK(self.callbacksLock);
     [self done];
 }

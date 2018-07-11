@@ -27,9 +27,11 @@
     self.URLs = [ImageViewHelper remoteUrlList];
     self.first = YES;
     [self downloadImages];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"next" style:UIBarButtonItemStylePlain target:self action:@selector(nextVC)];
 }
 
 - (void)downloadImages {
+    NSLog(@"SDDownloadViewController start download");
     self.start = CACurrentMediaTime();
     if (self.mark > 0) {
         for (int i = 100; i < 110; i++) {
@@ -41,7 +43,7 @@
                     self.first = NO;
                 }
                 if (cacheType == SDImageCacheTypeNone) {
-                    NSLog(@"downloadfinished : %@",@(i));
+                    NSLog(@"downloadfinished : %@ download time : %@",@(i),[NSString stringWithFormat:@"%lf",CACurrentMediaTime() - self.start]);
                 }else if (cacheType == SDImageCacheTypeMemory) {
                     NSLog(@"hit memory cache");
                 }else {
@@ -67,6 +69,12 @@
     }
 }
 
+- (void)nextVC {
+    SDDownloadViewController *vc = [[SDDownloadViewController alloc] init];
+    vc.mark = 1;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (void)showSDImage {
     UIImageView *sdImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
     [sdImageView sd_setImageWithURL:[NSURL URLWithString:self.URLs.firstObject] placeholderImage:nil options:SDWebImageCacheMemoryOnly];
@@ -80,9 +88,7 @@
 
 - (void)dealloc {
     NSLog(@"SDDownloadViewController dealloc");
-    if (self.mark <= 0) {
-        [[SDImageCache sharedImageCache] clearMemory];
-    }
+    [[SDImageCache sharedImageCache] clearMemory];
 }
 
 @end

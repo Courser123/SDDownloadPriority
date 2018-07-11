@@ -93,4 +93,6 @@ extern NSString *const SDWebImageDownloadFinishNotification;
 
 - (BOOL)cancel:(id)token;
 
+- (BOOL)changeOperationPriority:(NSOperationQueuePriority)priority token:(id)token;
+
 @end

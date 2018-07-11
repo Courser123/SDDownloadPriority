@@ -21,6 +21,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"优化后";
     // Do any additional setup after loading the view, typically from a nib.
     self.view.backgroundColor = [UIColor grayColor];
     self.URLs = [ImageViewHelper remoteUrlList];
@@ -29,14 +30,16 @@
 
 - (void)showSDButton {
     UIButton *topButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height * 0.5)];
+    topButton.layer.borderWidth = 0.5;
     topButton.tag = 0;
-    topButton.backgroundColor = [UIColor greenColor];
+    [topButton setTitle:@"100张" forState:UIControlStateNormal];
     [topButton addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:topButton];
     
     UIButton *bottomButton = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height * 0.5, self.view.bounds.size.width, self.view.bounds.size.height * 0.5)];
+    bottomButton.layer.borderWidth = 0.5;
     bottomButton.tag = 1;
-    bottomButton.backgroundColor = [UIColor redColor];
+    [bottomButton setTitle:@"10张" forState:UIControlStateNormal];
     [bottomButton addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:bottomButton];
 }

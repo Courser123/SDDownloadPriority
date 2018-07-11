@@ -18,6 +18,7 @@
 @property (assign, nonatomic, getter = isCancelled) BOOL cancelled;
 @property (copy, nonatomic) SDWebImageNoParamsBlock cancelBlock;
 @property (strong, nonatomic) NSOperation *cacheOperation;
+@property (nonatomic, copy) void(^changePriorityBlock)(NSOperationQueuePriority priority);
 
 @end
 
@@ -313,6 +314,11 @@
                     }
                 }
             };
+            operation.changePriorityBlock = ^(NSOperationQueuePriority priority) {
+                if (subOperation) {
+                    [self.imageDownloader changeOperationPriority:priority token:subOperation];
+                }
+            };
         }
         else if (image) {
             dispatch_main_sync_safe(^{
@@ -401,6 +407,13 @@
         // Until we can figure the exact cause of the crash, going with the ivar instead of the setter
 //        self.cancelBlock = nil;
         _cancelBlock = nil;
+    }
+}
+
+- (void)changePriority:(NSOperationQueuePriority)priority {
+    if (self.changePriorityBlock) {
+        self.changePriorityBlock(priority);
+        _changePriorityBlock = nil;
     }
 }
 

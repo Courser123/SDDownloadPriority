@@ -10,6 +10,8 @@
 
 @protocol SDWebImageOperation <NSObject>
 
+@optional
 - (void)cancel;
+- (void)changePriority:(NSOperationQueuePriority)priority;
 
 @end

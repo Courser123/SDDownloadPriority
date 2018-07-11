@@ -30,6 +30,31 @@ static char removePlaceholderKey;
 
 @implementation UIImageView (WebCache)
 
+static dispatch_semaphore_t sd_semaphore;
+
++ (void)load {
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sd_semaphore = dispatch_semaphore_create(1);
+        [self exchangeMethodWith:NSSelectorFromString(@"dealloc") andSel:@selector(sd_dealloc)];
+    });
+}
+
++ (void)exchangeMethodWith:(SEL)sel1 andSel:(SEL)sel2 {
+    Method m1 = class_getInstanceMethod([self class], sel1);
+    Method m2 = class_getInstanceMethod([self class], sel2);
+    method_exchangeImplementations(m1, m2);
+}
+
+- (void)sd_dealloc {
+//    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
+    [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad"];
+//    NSLog(@"%p:dealloc , url:%@",self, [self sd_imageURL]);
+    [self sd_dealloc];
+//    dispatch_semaphore_signal(sd_semaphore);
+}
+
 - (void)sd_setImageWithURL:(NSURL *)url {
     [self sd_setImageWithURL:url placeholderImage:nil options:0 progress:nil completed:nil];
 }
@@ -88,23 +113,23 @@ static char removePlaceholderKey;
             dispatch_main_sync_safe(^{
                 if (!wself) return;
 #ifdef DEBUG
-                if (image && !self.sd_hideHugeImageHint) {
+                if (image && !wself.sd_hideHugeImageHint) {
                     if (image.size.width >= kMaxImageSidePixel || image.size.height >= kMaxImageSidePixel) {
 #ifdef SD_NVLogger
                         NVLog(@"Huge Photo Url:%@; Size:%@", url.absoluteString, NSStringFromCGSize(image.size));
 #endif
-                        UILabel *label = [self sd_hugeImageMaskLabel];
+                        UILabel *label = [wself sd_hugeImageMaskLabel];
                         label.tag = 1024;
-                        [self addSubview:label];
+                        [wself addSubview:label];
                     }
                 }
 #endif
                 
                 if (image && (options & SDWebImageAvoidAutoSetImage) && completedBlock)
                 {
-                    self.needRemovePHView = YES;
+                    wself.needRemovePHView = YES;
                     completedBlock(image, error, cacheType, url);
-                    if (self.ifPlaceHolder && self.needRemovePHView) [self sd_removePlaceholderImageView];
+                    if (wself.ifPlaceHolder && wself.needRemovePHView) [wself sd_removePlaceholderImageView];
                     return;
                 } else if (image) {
                     [wself sd_setImageWithFadeEffect:image
@@ -119,8 +144,8 @@ static char removePlaceholderKey;
                         [wself sd_removePlaceholderImageView];
                     }
                 }
-                if (error && self.dp_errorImage) self.image = self.dp_errorImage;
-                if (!error && !image && self.dp_emptyImage) self.image = self.dp_emptyImage;
+                if (error && wself.dp_errorImage) wself.image = wself.dp_errorImage;
+                if (!error && !image && wself.dp_emptyImage) wself.image = wself.dp_emptyImage;
                 if (completedBlock && finished) {
                     completedBlock(image, error, cacheType, url);
                 }

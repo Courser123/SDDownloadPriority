@@ -200,4 +200,6 @@ typedef NSDictionary *(^SDWebImageDownloaderHeadersFilterBlock)(NSURL *url, NSDi
 
 - (void)cancel:(SDWebImageDownloadToken *)token;
 
+- (void)changeOperationPriority:(NSOperationQueuePriority)priority token:(SDWebImageDownloadToken *)token;
+
 @end

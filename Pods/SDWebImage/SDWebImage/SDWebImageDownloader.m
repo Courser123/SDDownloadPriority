@@ -147,7 +147,7 @@
 - (SDWebImageDownloadToken *)downloadImageWithURL:(NSURL *)url options:(SDWebImageDownloaderOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageDownloaderCompletedBlock)completedBlock {
     __weak __typeof(self)wself = self;
 
-    return [self addProgressCallback:progressBlock completedBlock:completedBlock forURL:url createCallback:^SDWebImageDownloaderOperation *{
+    return [self addProgressCallback:progressBlock completedBlock:completedBlock forURL:url options:(SDWebImageDownloaderOptions)options createCallback:^SDWebImageDownloaderOperation *{
         NSTimeInterval timeoutInterval = wself.downloadTimeout;
         if (timeoutInterval == 0.0) {
             timeoutInterval = 15.0;
@@ -190,7 +190,7 @@
 
 }
 
-- (SDWebImageDownloadToken *)addProgressCallback:(SDWebImageDownloaderProgressBlock)progressBlock completedBlock:(SDWebImageDownloaderCompletedBlock)completedBlock forURL:(NSURL *)url createCallback:(SDWebImageDownloaderOperation *(^)(void))createCallback {
+- (SDWebImageDownloadToken *)addProgressCallback:(SDWebImageDownloaderProgressBlock)progressBlock completedBlock:(SDWebImageDownloaderCompletedBlock)completedBlock forURL:(NSURL *)url options:(SDWebImageDownloaderOptions)options createCallback:(SDWebImageDownloaderOperation *(^)(void))createCallback {
     // The URL will be used as the key to the callbacks dictionary so it cannot be nil. If it is nil immediately call the completed block with no image or data.
     if (url == nil) {
         if (completedBlock != nil) {
@@ -218,6 +218,16 @@
             // Add operation to operation queue only after all configuration done according to Apple's doc.
             // `addOperation:` does not synchronously execute the `operation.completionBlock` so this will not cause deadlock.
             [self.downloadQueue addOperation:operation];
+        }else if (operation && !operation.isExecuting) {
+            [self setSuspended:YES];
+            if (options & SDWebImageDownloaderHighPriority) {
+                operation.queuePriority = NSOperationQueuePriorityHigh;
+            } else if (options & SDWebImageDownloaderLowPriority) {
+                operation.queuePriority = NSOperationQueuePriorityLow;
+            }else {
+                operation.queuePriority = NSOperationQueuePriorityNormal;
+            }
+            [self setSuspended:NO];
         }
     });
     
@@ -243,6 +253,21 @@
             if (canceled) {
                 [self.URLOperations removeObjectForKey:url];
             }
+        }
+    });
+}
+
+- (void)changeOperationPriority:(NSOperationQueuePriority)priority token:(SDWebImageDownloadToken *)token {
+    NSURL *url = token.url;
+    if (!url) {
+        return;
+    }
+    dispatch_barrier_sync(self.barrierQueue, ^{
+        SDWebImageDownloaderOperation *operation = [self.URLOperations objectForKey:url];
+        if (operation && !operation.isExecuting) {
+            [self setSuspended:YES];
+            [operation changeOperationPriority:priority token:token.downloadOperationCancelToken];
+            [self setSuspended:NO];
         }
     });
 }
