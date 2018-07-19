@@ -34,7 +34,7 @@
     NSLog(@"SDDownloadViewController start download");
     self.start = CACurrentMediaTime();
     if (self.mark > 0) {
-        for (int i = 100; i < 110; i++) {
+        for (int i = 100; i < 200; i++) {
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
             [self.view addSubview:imageView];
             [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
@@ -55,6 +55,13 @@
         for (int i = 0; i < 100; i++) {
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
             [self.view addSubview:imageView];
+            UIResponder *tempMark = imageView;
+            NSMutableString *nmStr = [NSMutableString string];
+            while (tempMark && ![[tempMark nextResponder] isKindOfClass:[UIViewController class]]) {
+                tempMark = [tempMark nextResponder];
+                [nmStr appendString:[NSString stringWithFormat:@"%@",tempMark]];
+                NSLog(@"%@",nmStr);
+            }
             [imageView sd_setImageWithURL:[NSURL URLWithString:self.URLs[i]] placeholderImage:nil options:SDWebImageCacheMemoryOnly completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 if (cacheType == SDImageCacheTypeNone) {
                     NSLog(@"downloadfinished : %@",@(i));

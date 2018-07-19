@@ -33,6 +33,6 @@
  */
 - (void)sd_removeImageLoadOperationWithKey:(NSString *)key;
 
-- (void)sd_changeOperationPriorityForKey:(NSString *)key;
+- (void)sd_changeOperationPriorityForKey:(NSString *)key operationPriority:(NSOperationQueuePriority)operationPriority;
 
 @end

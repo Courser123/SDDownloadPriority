@@ -27,6 +27,8 @@ static char TAG_PLACEHOLDER_IMAGEVIEW;
 static char TAG_PLACEHOLDER;
 static char TAG_FADE_EFFECT;
 static char removePlaceholderKey;
+static char TAG_OPERATION_QUEUE_PRIORITY;
+static char TAG_ORIGINAL_OPERATION_QUEUE_PRIORITY;
 
 @implementation UIImageView (WebCache)
 
@@ -38,6 +40,10 @@ static dispatch_semaphore_t sd_semaphore;
     dispatch_once(&onceToken, ^{
         sd_semaphore = dispatch_semaphore_create(1);
         [self exchangeMethodWith:NSSelectorFromString(@"dealloc") andSel:@selector(sd_dealloc)];
+//        [self exchangeMethodWith:NSSelectorFromString(@"didMoveToWindow") andSel:@selector(sd_didMoveToWindow)];
+//        [self exchangeMethodWith:NSSelectorFromString(@"didMoveToSuperview") andSel:@selector(sd_didMoveToSuperview)];
+//        [self exchangeMethodWith:@selector(setAlpha:) andSel:@selector(sd_setAlpha:)];
+//        [self exchangeMethodWith:@selector(setHidden:) andSel:@selector(sd_setHidden:)];
     });
 }
 
@@ -49,11 +55,115 @@ static dispatch_semaphore_t sd_semaphore;
 
 - (void)sd_dealloc {
 //    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
-    [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad"];
+    [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
 //    NSLog(@"%p:dealloc , url:%@",self, [self sd_imageURL]);
     [self sd_dealloc];
 //    dispatch_semaphore_signal(sd_semaphore);
 }
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+}
+
+- (void)didMoveToSuperview {
+    [super didMoveToSuperview];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+}
+
+- (void)sd_didMoveToWindow {
+    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
+    [self sd_didMoveToWindow];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+    dispatch_semaphore_signal(sd_semaphore);
+}
+
+- (void)sd_didMoveToSuperview {
+    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
+    [self sd_didMoveToSuperview];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+    dispatch_semaphore_signal(sd_semaphore);
+}
+
+- (void)sd_setAlpha:(CGFloat)alpha {
+    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
+    [self sd_setAlpha:alpha];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+    dispatch_semaphore_signal(sd_semaphore);
+}
+
+- (void)sd_setHidden:(BOOL)hidden {
+    dispatch_semaphore_wait(sd_semaphore, DISPATCH_TIME_FOREVER);
+    [self sd_setHidden:hidden];
+    if ([self sd_isVisible]) {
+        if (self.sd_operationQueuePriority == NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:self.sd_originalOperationQueuePriority];
+            self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
+        }
+    }else {
+        if (self.sd_operationQueuePriority != NSOperationQueuePriorityVeryLow) {
+            [self sd_changeOperationPriorityForKey:@"UIImageViewImageLoad" operationPriority:NSOperationQueuePriorityVeryLow];
+            self.sd_operationQueuePriority = NSOperationQueuePriorityVeryLow;
+        }
+    }
+    dispatch_semaphore_signal(sd_semaphore);
+}
+
+- (BOOL)sd_isVisible {
+    BOOL isVisible = self.window && self.superview && ![self isHidden] && self.alpha > 0;
+    return isVisible;
+}
+
 
 - (void)sd_setImageWithURL:(NSURL *)url {
     [self sd_setImageWithURL:url placeholderImage:nil options:0 progress:nil completed:nil];
@@ -98,6 +208,8 @@ static dispatch_semaphore_t sd_semaphore;
             [self sd_addPlaceholderImageViewWithFlag:(options & SDWebImageUseDPDefaultPlaceholder) placeholder:placeholder];
         });
     }
+    
+    [self bindOperationQueuePriorityWithOptions:options];
     
     if (url) {
         
@@ -166,6 +278,17 @@ static dispatch_semaphore_t sd_semaphore;
             }
         });
     }
+}
+
+- (void)bindOperationQueuePriorityWithOptions:(SDWebImageOptions)options {
+    if (options & SDWebImageHighPriority) {
+        self.sd_originalOperationQueuePriority = NSOperationQueuePriorityHigh;
+    }else if (options & SDWebImageLowPriority) {
+        self.sd_originalOperationQueuePriority = NSOperationQueuePriorityLow;
+    }else {
+        self.sd_originalOperationQueuePriority = NSOperationQueuePriorityNormal;
+    }
+    self.sd_operationQueuePriority = self.sd_originalOperationQueuePriority;
 }
 
 - (void)sd_setImageWithFadeEffect:(UIImage *)image
@@ -275,6 +398,23 @@ static dispatch_semaphore_t sd_semaphore;
 
 
 #pragma mark -
+
+- (NSOperationQueuePriority)sd_originalOperationQueuePriority {
+    return (NSOperationQueuePriority)[objc_getAssociatedObject(self, &TAG_ORIGINAL_OPERATION_QUEUE_PRIORITY) integerValue];
+}
+
+- (void)setSd_originalOperationQueuePriority:(NSOperationQueuePriority)sd_originalOperationQueuePriority {
+    objc_setAssociatedObject(self, &TAG_ORIGINAL_OPERATION_QUEUE_PRIORITY, [NSNumber numberWithInteger:sd_originalOperationQueuePriority], OBJC_ASSOCIATION_RETAIN);
+}
+
+- (NSOperationQueuePriority)sd_operationQueuePriority {
+    return (NSOperationQueuePriority)[objc_getAssociatedObject(self, &TAG_OPERATION_QUEUE_PRIORITY) integerValue];
+}
+
+- (void)setSd_operationQueuePriority:(NSOperationQueuePriority)sd_operationQueuePriority {
+    objc_setAssociatedObject(self, &TAG_OPERATION_QUEUE_PRIORITY, [NSNumber numberWithInteger:sd_operationQueuePriority], OBJC_ASSOCIATION_RETAIN);
+}
+
 - (UIActivityIndicatorView *)activityIndicator {
     return (UIActivityIndicatorView *)objc_getAssociatedObject(self, &TAG_ACTIVITY_INDICATOR);
 }
