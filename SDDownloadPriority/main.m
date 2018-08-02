@@ -1,16 +1,17 @@
 //
 //  main.m
-//  SDDownloadPriority
+//  ImageViewBase
 //
-//  Created by Courser on 2018/7/4.
-//  Copyright © 2018 Courser. All rights reserved.
+//  Created by welson on 02/27/2018.
+//  Copyright (c) 2018 welson. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "AppDelegate.h"
+@import UIKit;
+#import "ImageViewBaseAppDelegate.h"
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[])
+{
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        return UIApplicationMain(argc, argv, nil, NSStringFromClass([ImageViewBaseAppDelegate class]));
     }
 }

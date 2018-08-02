@@ -24,6 +24,7 @@ PODS:
   - libwebp/utils (0.4.3):
     - libwebp/core
   - libwebp/webp (0.4.3)
+  - NVLayout (1.2.4)
   - SDWebImage (3.7.4.30):
     - SDWebImage/Core (= 3.7.4.30)
   - SDWebImage/Core (3.7.4.30):
@@ -33,14 +34,16 @@ PODS:
     - SDWebImage/Core
 
 DEPENDENCIES:
+  - NVLayout
   - SDWebImage
   - SDWebImage/WebP
 
 SPEC CHECKSUMS:
   ImageKit: 2820d01f4c9e27ac043db201106040ae340fdd3d
   libwebp: 439fdd1006d68db75965cf58ae8b8c5e3e5a98ad
+  NVLayout: 51ac2d152a82fa153af726aa98fce725bb64899c
   SDWebImage: d94af5b8d54aead1aa0e76a7a863889a35e6d604
 
-PODFILE CHECKSUM: 3f02cdb3b6f0d90a41220d70e92d852ede9c9387
+PODFILE CHECKSUM: 9c20afced11e806f24525be2ed0b2e78742727ea
 
 COCOAPODS: 1.3.1
